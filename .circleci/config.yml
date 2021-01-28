@@ -1459,8 +1459,14 @@ jobs:
       - image: determinedai/cimg-base:stable
     parallelism: <<parameters.parallelism>>
     environment:
+      # Using the TF2-only image here is a hack to get more test coverage since TF1 is
+      # still the default system-wide. TF1 tests that fail in this configuration should
+      # be skipped when the "CUDA" environment variable is set to 11
+      TF1_CPU_IMAGE: determinedai/environments:cuda-11.0-pytorch-1.7-tf-2.4-gpu-0.9.0
+      TF1_GPU_IMAGE: determinedai/environments:cuda-11.0-pytorch-1.7-tf-2.4-gpu-0.9.0
       TF2_CPU_IMAGE: determinedai/environments:cuda-11.0-pytorch-1.7-tf-2.4-gpu-0.9.0
       TF2_GPU_IMAGE: determinedai/environments:cuda-11.0-pytorch-1.7-tf-2.4-gpu-0.9.0
+      CUDA: 11
     steps:
       - checkout
       - set-slack-user-id

@@ -1,4 +1,5 @@
 import copy
+import os
 import re
 import subprocess
 import tempfile
@@ -513,7 +514,7 @@ def test_k8_sidecars(using_k8s: bool) -> None:
 
 
 @pytest.mark.parallel  # type: ignore
-@pytest.mark.parametrize("tf2", [True])  # type: ignore
+@pytest.mark.parametrize("tf2", [True, False])  # type: ignore
 @pytest.mark.parametrize("aggregation_frequency", [1, 4, 8])  # type: ignore
 @pytest.mark.parametrize("average_aggregated_gradients", [True, False])  # type: ignore
 def test_horovod_optimizer(
@@ -522,6 +523,8 @@ def test_horovod_optimizer(
     image = conf.TF1_GPU_IMAGE
     if tf2:
         image = conf.TF2_GPU_IMAGE
+    if not tf2 and "CUDA" in os.environ and os.environ["CUDA"] == "11":
+        pytest.skip("CUDA 11 is not supported by TensorFlow 1")
 
     config = {
         "environment": {
